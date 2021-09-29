@@ -7,8 +7,7 @@ This virus has the ability to steal Discord Tokens, Passwords, Browser Credit Ca
 This **IS** being updated so more will be added soon.
 
 ### What is the server for?
-The server is for catching credit card details and passwords
-
+The server is used to store credit card information and passwords. 
 
 ## How to compile
 ```bash
