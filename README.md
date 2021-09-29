@@ -13,10 +13,11 @@ The server is used to store credit card information and passwords.
 - [x] Discord Injector
 - [x] Token Grabber & Crawler
 - [x] Browser Card & Password Stealer
+- [x] Credit Card Stealer
+- [x] Minecraft Session Stealer
 - [ ] Wider Browser Support
 - [ ] Threaded Actions
 - [ ] Dynamic Server Support
-- [x] Credit Card Stealer
 - [ ] Webcam Snap
 - [ ] Desktop Screenshot
 - [ ] File Crawler
