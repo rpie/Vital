@@ -34,7 +34,7 @@ sudo apt-get updatesudo apt-get install apache2
 sudo service apache2 restart
 ```
 
-
-
 ## Debug Output
 <img src="https://transfer.sh/FYrksy/WindowsTerminal_RYcy9mjnS6.png">
+
+#### I AM NOT RESPONSIBLE FOR ANY OF YOUR ACTIONS 
