@@ -1,4 +1,4 @@
-# DisJack V2
+# DisJack V2 - The Most Advanced Discord Malware
 Malware for Discord, designed to steal passwords, tokens, and inject discord folders for long-term use. 
 
 ## What does this do?
