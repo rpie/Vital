@@ -18,8 +18,8 @@ The server is used to store credit card information and passwords.
 - [x] Browser Card & Password Stealer
 - [x] Credit Card Stealer
 - [x] Minecraft Session Stealer
+- [ ] Multi-threading 
 - [ ] Wider Browser Support
-- [ ] Threaded Actions
 - [ ] Dynamic Server Support
 - [ ] Webcam Snap
 - [ ] Desktop Screenshot
