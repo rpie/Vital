@@ -1,4 +1,4 @@
-# DisJack V2 - The Most Advanced Discord Malware
+# Vital - Some Malware
 Malware for Discord, designed to steal passwords, tokens, and inject discord folders for long-term use. Utilizing older injection methods, bypasses anti-virus filters.
 This Malware has the ability to steal Discord Tokens, Passwords, Browser Credit Cards, Browser Cookies, and other information.
 DisJack supports, Discord, Canary, Lightcord, PTB, Opera, Opera GX, Amigo, Torch, Kometa, Orbitum, CentBrowser, 7star, Sputnik, Vivaldi, SxS, Chrome, Firefox, Privacy Browser, Edge, Uran, Brave, Yandex, and Iridium and adding more support for browsers soon.
